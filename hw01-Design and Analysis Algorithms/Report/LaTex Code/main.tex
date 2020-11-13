@@ -1,0 +1,338 @@
+\documentclass[a4paper]{article} 
+\input{head}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{color}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=C,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+\begin{document}
+%-------------------------------
+%	TITLE SECTION
+%-------------------------------
+
+\fancyhead[C]{}
+\hrule \medskip % Upper rule
+\begin{minipage}{0.295\textwidth} 
+\raggedright
+\footnotesize
+VO TRAN QUANG TUAN \hfill\\   
+18127248\hfill\\
+18127248@student.hcmus.edu.vn
+\end{minipage}
+\begin{minipage}{0.4\textwidth} 
+\centering 
+\large 
+Homework Assignment 1\\ 
+\normalsize 
+Introduction To Design And Analysis Of Algorithms, Fall 2020\\ 
+\end{minipage}
+\begin{minipage}{0.295\textwidth} 
+\raggedleft
+\today\hfill\\
+\end{minipage}
+\medskip\hrule 
+\bigskip
+
+
+%-------------------------------
+%	CONTENTS
+%-------------------------------
+\tableofcontents
+\newpage
+\section{Exercise 01}
+
+%\blindtext
+Proof the theorem:
+\begin{equation*}
+    f_1(n)\in O(g_1(n)) \wedge f_2\in O(g_2(n)) \implies f_1(n) + f_2(n) \in O(max\{g_1(n), g_2(n)\})
+\end{equation*}
+From the definition of big-O notation:
+\begin{align*}
+    f_1(n) \in O(g_1(n)) \Longleftrightarrow f_1(n) \leq c_1\cdot g_1(n), \forall n \geq n_1 \\
+    f_2(n) \in O(g_2(n)) \Longleftrightarrow f_2(n) \leq c_2\cdot g_2(n),
+    \forall n \geq n_2
+\end{align*}
+Explicitly, we can see that:
+\begin{gather*}
+    f_1(n) + f_2(n) \leq c_1\cdot g_1(n) + c_2\cdot g_2(n) \\ 
+    f_1(n) + f_2(n) \leq c_1 \cdot max(\{g_1(n), g_2(n)\}) + c_2 \cdot max(\{g_1(n), g_2(n)\}), \forall n \geq max(n_1, n_2) \\
+    f_1(n) + f_2(n) \leq (c_1 + c_2) \cdot max(\{g_1(n), g_2(n)\}), \forall n \geq max(n_1, n_2) \\
+    f_1(n) + f_2(n) \in O(max\{g_1(n), g_2(n)\})
+\end{gather*}
+The theorem is proved.
+\newpage
+%------------------------------------------------
+
+\section{Exercise 02}
+Analyze the complexity of the improvement Bubble Sort:
+
+\begin{lstlisting}
+void BubbleSort(int a[1..n], int n)
+{
+    bool flag = true;
+    int m = 1;
+    while (flag) 
+    {
+        flag = false;
+        m++;
+        for (int j = n; j >= m; j++) {
+            if (a[j-1] > a[j]) {
+                swap(a[j-1], a[j]);
+                flag = true;
+            }
+        }
+    }
+}
+\end{lstlisting}
+
+The size of input: n (the number of elements in array needs to be sorted). \\ 
+Basis operation: the comparison between a[j-1] and a[j] in if condition. \\
+This algorithm depends on the distribution of the data in array.\\
+\subsection{The best case}
+The best case happens when the array was sorted in desired order. \\
+Let $B(n)$ is the time complexity of this algorithm in the best case, we can see that $B(n) = n-1 \in \Theta(n)$.
+\subsection{The worst case}
+The worst case happens when the array was sorted in the inverse order than the desired order, or the max element appears in the begin of the array. \\ 
+\\
+Let analyze the complexity of this case, look at the for loop in this case, when the if condition is true, the flag is true, so the while loop is true. \\ 
+\\
+Basis operation is the comparison in the if condition, traverse every for loop and while loop, we can see that:
+\begin{itemize}
+    \item $m=2: j \in [2 \ldots n] \implies$ loop $n-1$ times.
+    \item $m=3: j \in [3 \ldots n] \implies$ loop $n-2$ times.\\
+    \ldots
+    \item $m=n: j=n \implies$ loop $1$ times.
+\end{itemize}
+Let $W(n)$ is the time complexity:
+\begin{equation*}
+    W(n) = (n-1) + (n-2) + \ldots + 1 = \frac{n \cdot (n-1)}{2} \in \Theta(n^2)
+\end{equation*}
+\subsection{The average case}
+Suppose the possible which algorithm stop after each iteration is the same. So, the probability of this is $\frac{1}{n-1}$. \\
+\\
+Let $C_i$ is number of time operates the comparison (basis operation in this algorithm in for loop) after the $i^{th}$ iteration (in while loop):
+\begin{itemize}
+    \item $C_1 = n-1$ time operates the comparison.
+    \item $C_2 = n-2 + n-1 = 2 \cdot n - 3$ time operates the comparison.
+    \\
+    \ldots
+    \item $C_i = n-i + \ldots + n-1$
+    \\
+    \ldots 
+    \item $C_{n-1} = 1 + ... + n-1 = \frac{n \cdot (n-1)}{2}$ time operates the comparison.
+\end{itemize}
+Let $A(n)$ is time complexity:
+\begin{equation*}
+    A(n) = \frac{1}{n-1} \cdot (n-1 + 2 \cdot n -3 + ... + \frac{n \cdot (n-1)}{2}) \in \Theta(n^2)
+\end{equation*}
+
+\newpage
+%------------------------------------------------
+\section{Exercise 03}
+Analyze the complexity of the Insertion Sort:
+\begin{lstlisting}
+void InsertionSort(int a[1..n], int n) 
+{
+    for(int i = 2; i <= n; i++)
+    {
+        v = a[i];
+        j = i-1;
+        while(j >= 1 && a[j] > v) 
+        {
+            a[j+1] = a[j];
+            j--;
+        }
+        a[j + 1] = v;
+    }
+}
+\end{lstlisting}
+The size of input: $n$ (number of elements in array) \\
+The basis operation: the comparison between $a[j]$ and $v$ in while loop condition \\
+This algorithm depends on the distribution of data in array. 
+\subsection{The best case}
+The best case happens when the array was sorted in desired order. \\
+Let $B(n)$ is the time complexity of this algorithm in the best case, we can see that $B(n) = n-1 \in \Theta(n)$.
+\subsection{The worst case}
+The worst case happens when the array was sorted in the inverse order than the desired order. \\
+\\
+Let analyze the complexity of this case, look at the for loop and while loop in this case, we can see that:
+\begin{itemize}
+    \item $i=2: j = 1 \implies$ loop $1$ times.
+    \item $i=3: j \in [1 \ldots 2] \implies$ loop $2$ times.
+    \item $i=4: j \in [1 \ldots 3] \implies$ loop $3$ times. \\
+    \ldots
+    \item $i=n-1: j \in [1 \ldots n-2] \implies$ loop $n-2$ times.
+    \item $i=n: j \in [1 \ldots n-1] \implies$ loop $n-1$ times.
+\end{itemize}
+Let $W(n)$ is the time complexity of this algorithm in the worst case:
+\begin{equation*}
+    W(n) = 1 + 2 + 3 + \dots (n-2) + (n-1) = \frac{n \cdot (n-1)}{2} \in \Theta(n^2) 
+\end{equation*}
+\subsection{The average case}
+Suppose every number distinct each other, the probability of inserting to i position is the same, it is $\frac{1}{i}$. \\
+\\
+Suppose we have $i=4$:
+\begin{itemize}
+    \item Insert to the $4^{th}$ position: $1$ comparison $\cdot \frac{1}{4}$
+    \item Insert to the $3^{th}$ position: $2$ comparison $\cdot \frac{1}{4}$
+    \item Insert to the $2^{th}$ position: $3$ comparison $\cdot \frac{1}{4}$
+    \item Insert to the $1^{th}$ position: $3$ comparison $\cdot \frac{1}{4}$
+\end{itemize}
+General: 
+\begin{itemize}
+    \item Near the last position: $\frac{i-1}{i}$
+    \item The last position: $\frac{i-1}{i}$
+\end{itemize}
+Let $C(i)$ is the average of number of comparison to insert $a_i$:
+\begin{equation*}
+    C_i = \frac{i-1}{i} + \sum_{j=1}^{i-1} \frac{j}{i} 
+\end{equation*}
+Let $A(n)$ is the time complexity of this algorithm in the average case:
+\begin{equation*}
+    A(n) = \sum_{i=2}^{n} C_i \approx \frac{n^2 - n}{4} + n - ln(n) - \gamma \approx \frac{n^2}{4} \in \Theta(n^2)
+\end{equation*}
+\newpage
+%------------------------------------------------
+\section{Exercise 04}
+Given an array of n integers. Design an algorithm with the time complexity $\Theta(n^2)$ to find a subsequence (or a contiguous subarray) with largest sum of numbers in the array. If all integer numbers in array is negative, we must return 0
+\subsection{Design the algorithm}
+Using two for loop to traverse the array. The first loop indicates the start of subsequence, the second loop indicates the length and compares sum of this subsequence (subsequence is being considered) with the current max sum and update the start point (using for tracing the subsequence after find max sum of array), update the length (using for tracing), and update the max sum. \\ 
+\\
+Tracing the subsequence: using a start position and length of subsequence for traverse from the original array. \\
+\\
+The result of subsequence which has max sum in original array has a format:
+\begin{equation*}
+    RES[0..N+1]
+\end{equation*}
+With $RES[0]$ is length of this subsequence, $RES[N+1]$ is sum of this subsequence, $RES[1..N]$ is the content of this subsequence.
+\subsection{Pseudo code}
+\begin{lstlisting}
+PROCEDURE Tracing(A[0..n-1], LengthOfResult, TraceIndex) 
+    if LengthOfResult = 0
+        return NULL
+    declare RES[0..LengthOfResult+1]
+    RES[0] <- LengthOfResult
+    for i <- TraceIndex to (TraceIndex + Length):
+        RES[i-TraceIndex + 1] <- A[i]
+    return RES
+    
+ALGORITHM FindSubsequenceWithMaxSum(A[0..n-1])
+    maxSum <- 0, tempSum <- 0
+    lengthOfResult <-0, traceIndex <- 0;
+    for i <- 0 to n:
+        tempLengthOfResult <- 0
+        tempTraceIndex <- i
+        for j <- 0 to n:
+            tempSum <- (tempSum + A[j]);
+            INCREASE lengthOfResult;
+            if tempSum > maxSum:
+                UPDATE maxSum <- tempSum
+                UPDATE lengthOfResult
+                UPDATE traceIndex
+    RES <- Tracing(A, lengthOfResult, traceIndex)
+    //Update maxSum to RES
+    RES[lengthOfResult + 1] <- maxSum;
+    return RES
+\end{lstlisting}
+
+
+\subsection{Analyze the complexity}
+The size of input: n (number of elements in array). \\
+With tracing, time complexity: $g(n) \in \Theta(n)$ \\
+Basis operation: Comparison between tempSum and MaxSum in the inner loop.\\
+We have two for loop, and: $i: j \in [i, n-1]$
+\begin{itemize}
+    \item $i = 0: j \in [0,n-1] \implies$ loop $n$ times 
+    \item $i = 1: j \in [1,n-1] \implies$ loop $n-1$ times \\
+    \ldots
+    \item $i = n-1: j = n-1 \implies$ loop $1$ times
+\end{itemize}
+The time complexity:
+\begin{equation*}
+    f(n) = n + (n-1) + (n-2) + \ldots + 1 = \frac{n\cdot(n+1)}{2} \in \Theta(n^2)
+\end{equation*}
+So:
+\begin{equation*}
+    f(n) + g(n) \in \Theta(n^2) + \Theta(n) \Longleftrightarrow f(n) + g(n) \in \Theta(n^2)
+\end{equation*}
+This algorithm doesn't depend on the distribution of data in array.
+\subsection{Implement in C++}
+Tracing the subsequence from input array, trace index and length of the subsequence:
+\begin{lstlisting}
+// tracing the subsequence.
+int* tracing(const int* a, const int& resLength, const int& traceIndex) {
+    if (resLength == 0) return nullptr;
+    int* resArray = new int[resLength + 2];
+    // the first element of resArray is length of array
+    resArray[0] = resLength;
+    // tracing the subsequence from the testArray
+    for (size_t i = traceIndex; i < traceIndex + resLength; i++)
+    {
+        // subsequence traced from a and trace index
+        resArray[i-traceIndex+1] = a[i];
+    }
+    return resArray;
+}
+\end{lstlisting}
+Finding the subsequence in array, which have max sum of all elements in it:
+\begin{lstlisting}
+// find the max sum and subsequence.
+int* findMaxSum(const int* a, const int& n) {
+    int maxSum = 0;
+    // temporatory sum
+    int tmpSum = 0;
+    // temporary trace index
+    int tmpTraceIndex = 0;
+    // trace index;
+    int traceIndex = 0;
+    // length of subsequence
+    int resLength = 0;
+    for (size_t i = 0; i < n; i++)
+    {
+        // array's length
+        int tmpResLength = 0;
+        tmpTraceIndex = i;
+        tmpSum = 0;
+        for (size_t j = i; j < n; j++)
+        {
+            tmpSum += a[j];
+            tmpResLength += 1;
+            if (tmpSum > maxSum) {
+                // update max sum
+                maxSum = tmpSum;
+                //update length of subsequence
+                resLength = tmpResLength;
+                //update trace index
+                traceIndex = tmpTraceIndex;
+            }
+        }
+    }
+    
+    int* resArray = nullptr;
+    resArray = tracing(a, resLength, traceIndex);
+    if (resArray != nullptr) {
+        resArray[resLength + 1] = maxSum;
+    }
+    return resArray;
+}
+\end{lstlisting}
+\end{document}
