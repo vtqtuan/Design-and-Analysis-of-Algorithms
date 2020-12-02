@@ -1,0 +1,288 @@
+\documentclass[a4paper]{article} 
+\input{head}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+\begin{document}
+
+
+%-------------------------------
+%	TITLE SECTION
+%-------------------------------
+
+\fancyhead[C]{}
+\hrule \medskip % Upper rule
+\begin{minipage}{0.295\textwidth} 
+\raggedright
+\footnotesize
+VO TRAN QUANG TUAN \hfill\\   
+18127248\hfill\\
+18127248@student.hcmus.edu.vn
+\end{minipage}
+\begin{minipage}{0.4\textwidth} 
+\centering 
+\large 
+Homework Assignment 3\\ 
+\normalsize 
+Introduction To Design And Analysis Of Algorithms, Fall 2020\\ 
+\end{minipage}
+\begin{minipage}{0.295\textwidth} 
+\raggedleft
+\today\hfill\\
+\end{minipage}
+\medskip\hrule 
+\bigskip
+
+%-------------------------------
+%	CONTENTS
+%-------------------------------
+\tableofcontents
+\newpage
+%------------------------------------------------
+\section{Problem 1}
+Find both the smallest and largest values in an array of size $n$. \par
+\subsection{Problem 1.a}
+Analysis the complexity of the divide-and-conquer algorithm presented in class without using the Master theorem. Assuming that the comparisons are the basic operations. \par
+\begin{algorithm}
+\renewcommand{\thealgorithm}{}
+\caption{Find both smallest and largest values in an array of size $n$}
+\begin{algorithmic}
+\Procedure{Findmaxmin}{$A[1 \ldots N], left, right, min, max$}
+\Comment{Find both max and min values of array $A$}
+    \If {$left \geq right-1$}
+        \If {$A[left]<A[right]$}
+            \State $min \gets A[left]$
+            \State $max \gets A[right]$
+        \Else
+            \State $min \gets A[right]$
+            \State $max \gets A[left]$
+        \EndIf
+    \Else
+        \State $mid \gets \floor*{\frac{left+right}{2}}$
+        \State \Call{Findmaxmin}{$A, left, mid, minL, maxL$}
+        \State \Call{Findmaxmin}{$A, mid+1, minR, maxR$}
+        \State $min \gets (minL < minR) \; ? \; minL : minR$
+        \State $max \gets (maxL > maxR) \; ? \; maxL : maxR$
+    \EndIf
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+To begin with the analysis of this algorithm, we must specify that: 
+\begin{itemize}
+    \item Size of input: array of n elements.
+    \item Basic operations: the comparison between $a[l]$ and $a[r]$ in if condition, between $minL$ and $minR$, between $maxL$ and $maxR$.
+    \item The distribution of data doesn't effect to the time complexity of this algorithm.
+\end{itemize}
+Let $C(n)$ is the time complexity of this algorithm, we get the following recurrence: 
+\begin{gather*}
+    C(n) = C(\floor*{\frac{n}{2}}) + C(n-\floor*{\frac{n}{2}}) + 2, n > 2 \\ 
+    C(n) = 1, n \leq 2
+\end{gather*}
+Assume $n=2^k$, use the Backward substitution to solve this recurrence: 
+\begin{equation*}
+    \begin{aligned}
+      C(2^k) & = 2 \cdot C(2^{k-1}) + 2 \\ 
+             & = 2 \cdot [2 \cdot C(2^{k-2}) + 2] + 2 = 2^2 \cdot C(2^{k-2}) + 2^2 + 2^1 \\ 
+             & = 2^2 \cdot [2 \cdot C(2^{k-3}) + 2] + 2^2+2^1 = 2^3 \cdot C(2^{k-3}) + 2^3 + 2^2+2^1 \\ 
+             & = \ldots = 2^i \cdot C(2^{k-i}) + 2^{i+1} - 2
+    \end{aligned}
+\end{equation*}
+Base on the initial condition $C(n) = 1$ with $n \leq 2$, we choose $n = 1$. Let's set $2^{k-i} = 1$ so we have $k=i$. Therefore, we see that: $C(2^k) = 2^k + 2^{k+1} - 2 = 3 \cdot 2^k - 2$. Come back with $n = 2^k$, the time complexity $C(n) = 3 \cdot n - 2 \in \Theta(n)$
+\subsection{Problem 1.b}
+Design an equivalent loop algorithm to solve this problem. \par \bigskip
+Description: Assign the min value and max value is the first element of this array. After that, iterate array at the second element and compare these values with every element. \par \bigskip
+Pseudo code: \par 
+\begin{algorithm}
+\renewcommand{\thealgorithm}{}
+\caption{Find both smallest and largest values in an array of size $n$ with loop and time complexity is $\Theta(n)$}
+\begin{algorithmic}
+
+\Procedure{Findmaxminloop}{$A[1 \ldots N]$}
+    \State $min \gets A[1]$
+    \State $max \gets A[1]$
+    \For{$i=2, \ldots, N$}
+        \If{$A[i] > max$}
+        \State $max \gets A[i]$ \Comment{Update $max$}
+        \Else
+            \If{$A[i] < min$}
+            \State $min \gets A[i]$ \Comment{Update $min$}
+            \EndIf
+        \EndIf
+    \EndFor
+    \State \Return {$max, min$}
+\EndProcedure
+
+\end{algorithmic}
+\end{algorithm}
+To begin with the analysis of this algorithm, we must specify that: \par
+\begin{itemize}
+    \item Size of input: array of $n$ elements.
+    \item Basic operations: the compare operations in two if conditions in the algorithm. They are $A[i] > max$ and $A[i] < min$.
+    \item The arrangement of data affects to the time complexity of this algorithm, so we must analyze in three cases: best case, worst case and average case.
+\end{itemize}
+Let $f(n)$ is the time complexity of this algorithm. \par \bigskip
+Firstly, with the best case is the array was sort in ascending order, so only the first if condition $A[i] > max$ is performed. With remaining $n-1$ elements, this condition is performed $n-1$ times. So $f(n) = n-1 \in \Theta(n)$. \par \bigskip
+Secondly, with the worst case is the array was sort in descending order, so two if conditions $A[i] > max$ and $A[i] < min$ are performed. With remaining $n-1$ elements, every condition is performed $n-1$ times. So $f(n) = 2 \cdot (n-1) \in \Theta(n)$. \par \bigskip
+Finally, with the average case, assume that 50\% the first if condition is true ($A[i] > max$), we have the following time complexity: 
+\begin{gather*}
+    f(n) = \ceil*{\frac{n-1}{2}} + 2[(n-1) - \ceil*{\frac{n-1}{2}}]
+\end{gather*}
+With $n$ is odd, $f(n) = \frac{n-1}{2} + 2(n-1) - (n-1) = \frac{3\cdot(n-1)}{2} \in \Theta(n)$. \par \bigskip
+With $n$ is even, $f(n) \leq \frac{n-1}{2} + 2(n-1) - (n-1) = \frac{3\cdot(n-1)}{2} \in \Omega(n)$.
+
+
+\newpage
+%------------------------------------------------
+\section{Problem 2}
+Analysis the complexity of Merge Sort algorithm without using the Master theorem in two cases. To begin with the analysis, we must focus on the pseudo code of the algorithm. \par
+\begin{algorithm}
+\renewcommand{\thealgorithm}{}
+\caption{Merge Sort}
+\begin{algorithmic}
+\Procedure{Mergesort}{$a[1 \ldots n], low, high$}
+    \If{$low<high$}
+        \State $mid \gets \floor* {\frac{low+high}{2}}$
+        \State \Call{Mergesort}{$a, low, mid$}
+        \State \Call{Mergesort}{$a, mid+1, high$}
+        \State \Call{Merge}{$a, low, mid, high$}
+    \EndIf
+\EndProcedure
+\bigskip
+\Procedure{Merge}{$a[1 \ldots n], low, mid, high$}
+    \State $i \gets low$
+    \State $j \gets mid+1$
+    \State $k \gets low$
+    \While {$i \leq mid$ \AND $j \leq high$}
+        \If {$a[i] \leq a[j]$}
+            \State $buf[k++] \gets a[i++]$
+        \Else \State $buf[k++] \gets a[j++]$
+        \EndIf
+    \EndWhile
+    \If{$i>mid$}
+        \State $buf[k \ldots high] \gets a[j \ldots high]$
+    \Else
+        \State $buf[k \ldots high] \gets a[i \ldots mid]$
+    \EndIf
+    \State $a[low \ldots high] \gets buf[low \ldots high]$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Problem 2.a}
+Case 1: Consider the comparison to be the algorithm's basic operation. \par \bigskip
+Let $T(n)$ is the time complexity of this algorithm. Generally, assuming that we need to sort an array of $n$ numbers in ascending order, we can specify some important information for the analysis:
+\begin{itemize}
+    \item The size of input: an array with $n$ numbers needs to be sorted.
+    \item The basic operation: the comparison in if condition inner the while loop $a[i] \leq a[j]$.
+    \item The distribution of the input array effects on the time complexity of this algorithm, so we must analyze in two cases: best case, worst case. Can't determine the time complexity in average case.
+\end{itemize}
+To begin with the analysis of time complexity, we assume that $n = 2^k$. 
+\par \bigskip
+Firstly, let's analyze in the best case. Clearly, we can see that, the best case happens when the array was sorted in desired order. Because the basic operation is in merge algorithm, when merging two sub array we must comparing two pair of element in those sub array, with the sorted array, number of time compare operation is performed is length of the shorter array. So we get the following recurrence for the running time $T(n)$:
+
+\begin{gather*}
+          T(n) = T(\floor* {\frac{n}{2}}) + T(\ceil* {\frac{n}{2}}) + \floor*{\frac{n}{2}}, n > 1 \\ 
+                T(1) = 0
+\end{gather*}
+With $n = 2^k$, using the Backward substitution to solve this recurrence:
+\begin{equation*}
+  \begin{aligned}
+    T(2^k) & = 2 \cdot T(2^{k-1}) + 2^{k-1} \\ 
+           & = 2 \cdot [2 \cdot T(2^{k-2}) + 2^{k-2}] + 2^{k-1} = 2^2 \cdot T(2^{k-2}) + 2 \cdot 2^{k-1} \\
+           & = 2^2 \cdot [2 \cdot T(2^{k-3}) + 2^{k-3}] + 2 \cdot 2^{k-1} = 2^3 \cdot T(2^{k-3}) + 3 \cdot 2^{k-1} \\ 
+           & = \ldots = 2^i \cdot T(2^{k-i}) + i \cdot 2^{k-1}
+  \end{aligned}
+\end{equation*}
+Base on the initial condition: $T(1) = 0$, let's set $2^{k-i} = 1$ and we have $k=i$. Therefore, we see that: $T(2^k) = k \cdot 2^{k-1} = \frac{k \cdot 2^k}{2}$. \par \bigskip
+We also have $k = \log_2 n$, so $T(n) = \frac{n \cdot \log_2 n}{2} \in \Theta(n \cdot \log n)$. \par \bigskip
+Secondly, let's analyze in the worst case. Clearly, we can see that the worst case happens when the number of comparison is maximum, two sub array were compare together and the index $i$ and $j$ in while loop scan to the end of these sub array, so the number of comparison is $n-1$. So we get the following recurrence for the running time $T(n)$: 
+\begin{gather*}
+    T(n) = T(\floor* {\frac{n}{2}}) + T(\ceil* {\frac{n}{2}}) + (n-1), n > 1 \\ 
+                T(1) = 0
+\end{gather*}
+With $n = 2^k$, using the Backward substitution to solve this recurrence:
+\begin{equation*}
+    \begin{aligned}
+      T(2^k) & = 2 \cdot T(2^{k-1}) + 2^{k}-1 \\ 
+             & = 2 \cdot [2 \cdot T(2^{k-2}) + 2^{k-1}-1] + 2^{k}-1 = 2^2 \cdot T(2^{k-2}) + 2\cdot2^k - (2^1 + 2^0) \\ 
+             & = 2^2\cdot[T(2^{k-3})+2^{k-2}-1]+2\cdot2^k-(2^1+2^0) = 2^3\cdot T(2^{k-3}) + 3 \cdot 2^{k}-(2^2+2^1+2^0) \\ 
+             & = \ldots = 2^i \cdot T(2^{k-i}) + i \cdot 2^k - (2^i-1) 
+    \end{aligned}
+\end{equation*}
+Base on the initial condition: $T(1) = 0$, let's set $2^{k-i} = 1$ and we have $k=i$. Therefore, we see that: $T(2^k) = k \cdot 2^k - (2^k-1)$. \par \bigskip
+We also have $k = \log_2 n$, so $T(n) = n \cdot \log_2n  - n + 1 \in \Theta(n \cdot \log n)$
+\subsection{Problem 2.b}
+Case 2: Consider the data movement to be the algorithm's basic operation. \par \bigskip
+Let $T(n)$ is the time complexity of this algorithm. Generally, assuming that we need to sort an array of $n$ numbers in ascending order, we can specify some important information for the analysis:
+\begin{itemize}
+    \item The size of input: an array with $n$ numbers needs to be sorted.
+    \item The basic operation: the data movement (assigning $buf$ and $a$).
+    \item The distribution of the input array doesn't effect on the time complexity of this algorithm because we must move $n$ numbers.
+\end{itemize}
+To begin with the analysis of time complexity, we assume that $n = 2^k$. We have the following recurrence for the running time $M(n)$: 
+\begin{gather*}
+     M(n) = M(\floor* {\frac{n}{2}}) + M(\ceil* {\frac{n}{2}}) + n, n > 1 \\ 
+                M(1) = 0
+\end{gather*}
+With $n = 2^k$, using the Backward substitution to solve this recurrence:
+\begin{equation*}
+    \begin{aligned}
+      M(2^k) & = 2 \cdot M(2^{k-1}) + 2^{k}\\ 
+             & = 2 \cdot [2 \cdot M(2^{k-2}) + 2^{k-1}] + 2^{k}= 2^2 \cdot M(2^{k-2}) + 2\cdot2^k\\ 
+             & = 2^2\cdot[M(2^{k-3})+2^{k-2}]+2\cdot2^k= 2^3\cdot M(2^{k-3}) + 3 \cdot 2^{k}\\ 
+             & = \ldots = 2^i \cdot M(2^{k-i}) + i \cdot 2^k
+    \end{aligned}
+\end{equation*}
+Base on the initial condition: $M(1) = 0$, let's set $2^{k-i} = 1$ and we have $k=i$. Therefore, we see that: $M(2^k) = k \cdot 2^k$. \par \bigskip
+We also have $k = \log_2 n$, so $M(n) = n \cdot \log_2n \in \Theta(n \cdot \log n)$
+\newpage
+%------------------------------------------------
+\section{Problem 3}
+Modify the Merge Sort algorithm that run in linear time.
+\subsection{Problem 3.a}
+Focus on the pseudo code of merge sort in the lecture, we can specify that: 
+\begin{itemize}
+    \item The algorithm divide the array despite the arrangement of data input, so if the data input is desired sorted, the time complexity is still $\Theta(n\log n)$.
+    \item We can use some method to handle this case, decrease the time complexity to $\Theta(n)$ if the array is sorted. We call its name Natural Merge Sort.
+\end{itemize}
+Idea: this algorithm define the sub array with is sorted, and merge them. So if the array is sorted, the algorithm doesn't divide it. The time complexity for traversing the array to find the sub array is sorted is $\Theta(n)$ with array is presorted.
+\subsection{Problem 3.b}
+\begin{algorithm}
+\renewcommand{\thealgorithm}{}
+\caption{Update Merge Sort can run in linear time}
+\begin{algorithmic}
+\Procedure{NaturalMergesort}{$a[1 \ldots n]$}
+    \State $left \gets 1$
+    \State $right \gets n$
+    \State $sorted \gets \FALSE $ 
+    \State $l \gets 1$
+    \State $r \gets right$
+    \Do 
+        \State $sorted \gets \TRUE$
+        \State $left \gets 1$
+        \While{$left < right$}
+            \State $l \gets left$
+            \While{$l < right \AND a[l] \leq a[l+1]$}
+                \State $l++$
+            \EndWhile
+            \While{$r == right - 1 \OR r < right \AND a[r] \leq a[r+1]$}
+                \State $r++$
+            \EndWhile
+            \If{$r \leq right$}
+                \State \Call{Merge}{$a, left, l, r$}
+                \State $sorted \gets \FALSE$
+            \EndIf
+            \State $left \gets r+1$
+        \EndWhile
+    \doWhile{$!sorted$}
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\newpage
+%------------------------------------------------
+\end{document}
