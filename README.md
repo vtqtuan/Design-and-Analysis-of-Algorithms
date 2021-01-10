@@ -9,7 +9,7 @@ Repository about Lab and Homeworks on Introduction to Design and Analysis of Alg
 1. HW01: Introduction to design and analysis of algorithms.  
 2. HW02: Brute-Force.   
 3. HW03: Divide and Conquer.  
-4. HW04: Decreas and Conquer.  
+4. HW04: Decrease and Conquer.  
 5. Lab01: Brute-Force.   
 6. Lab02: Backtracking.   
 7. Lab03: Divide and Conquer.   
