@@ -1,4 +1,4 @@
-# Design-and-Analysis-Algorithms    
+# Design-and-Analysis-of-Algorithms    
 Repository about Lab and Homeworks on Introduction to Design and Analysis of Algorithms Course - Fall 2020    
 ---
 ## Description   
