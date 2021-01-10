@@ -14,7 +14,7 @@ Repository about Lab and Homeworks on Introduction to Design and Analysis of Alg
 6. Lab02: Backtracking.   
 7. Lab03: Divide and Conquer.   
 8. Lab04: Decrease and Conquer.   
-9. Lab06: Dynamic Programming.   
+9. Lab05: Dynamic Programming.   
 ## Report and Code   
 - All reports and source code were written by Quang-Tuan Vo-Tran, student of HCMUS. 
 - All reports in English.   
