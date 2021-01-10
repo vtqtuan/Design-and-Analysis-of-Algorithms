@@ -1,0 +1,250 @@
+\documentclass[a4paper]{article} 
+\input{head}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+\begin{document}
+
+%-------------------------------
+%	TITLE SECTION
+%-------------------------------
+
+\fancyhead[C]{}
+\hrule \medskip % Upper rule
+\begin{minipage}{0.295\textwidth} 
+\raggedright
+\footnotesize
+VO TRAN QUANG TUAN\hfill\\   
+18127248\hfill\\
+18127248@student.hcmus.edu.vn
+\end{minipage}
+\begin{minipage}{0.4\textwidth} 
+\centering 
+\large 
+Homework Assignment 4\\ 
+\normalsize 
+Introduction To Design And Analysis Of Algorithms, Fall 2020\\ 
+\end{minipage}
+\begin{minipage}{0.295\textwidth} 
+\raggedleft
+\today\hfill\\
+\end{minipage}
+\medskip\hrule 
+\bigskip
+
+%-------------------------------
+%	CONTENTS
+%-------------------------------
+\tableofcontents
+\newpage
+%------------------------------------------------
+\section{Problem 1}
+By using divide-and-conquer approach, we can solve the change making problem with the time complexity is represented by the recurrence: 
+\begin{gather*}
+    T(n) = \sum_{i=1}^{\floor*{\frac{n}{2}}}[T(i) + T(n-i)] + \Theta(n), n >2 \\
+    T(2)=1, T(1)=0
+\end{gather*}
+Replace $\Theta(n)$ by $\floor*{\frac{n}{2}}$. We have:
+\begin{equation*}
+    \begin{aligned}
+        T(n) & = \sum_{i=1}^{\floor*{\frac{n}{2}}}[T(i) + T(n-i)] + \floor*{\frac{n}{2}} 
+    \end{aligned}
+\end{equation*}
+\subsection{Consider the case $n$ is odd number}
+With odd number, clearly: 
+\begin{equation*}
+    \begin{aligned}
+        T(n) & = \sum_{i=1}^{\floor*{\frac{n}{2}}}[T(i) + T(n-i)] + \floor*{\frac{n}{2}} \\
+        & = T(1)+T(2) + \ldots + T(\floor*{\frac{n}{2}}) + T(\floor*{\frac{n}{2}}+1) + \ldots + T(n-1) + \floor*{\frac{n}{2}}  \\ 
+        & = \sum_{i=1}^{n-1}{T(i)} + \floor*{\frac{n}{2}} \\
+        \implies 2 \cdot T(n) = 2 \cdot \sum_{i=1}^{n-1}{T(i)} + n 
+    \end{aligned}
+\end{equation*}
+With $n$, from the equation above: 
+\begin{equation}
+    2 \cdot T(n) = 2 \cdot \sum_{i=1}^{n-1}{T(i)} + n 
+\end{equation}
+If replace $n$ by $n-1$, $n-1$ is even:
+\begin{equation}
+    2 \cdot T(n-1) = 2 \cdot \sum_{i=1}^{n-2}{T(i)} + n-1 + 2 \cdot T(\frac{n-1}{2})
+\end{equation}
+Subtract (2) from (1): 
+\begin{equation*}
+    \begin{aligned}
+        2T(n) - 2T(n-1) = 2T(n-1) + 1 -  2 \cdot T(\frac{n-1}{2})
+        & \Leftrightarrow T(n) = 2T(n-1) + 2^{-1} - T(\frac{n-1}{2})
+    \end{aligned}
+\end{equation*}
+Comeback to the familiar form of recurrence equation, easily solve it by using backward substitution: 
+\begin{equation*}
+    \begin{aligned}
+        T(n) & = 2T(n-1) + 2^{-1}  - T(\frac{n-1}{2}) \geq 3T(n-1)+2^{-1}\\
+        & = 3 \cdot [3T(n-2) + 2^{-1}] + 2^{-1} = 3^2 \cdot T(n-2) + 3\cdot2^{-1} + 2^{-1} \\ 
+        & = 3^2 \cdot[3T(n-3) + 2^{-1}] + 3\cdot2^{-1} + 2^{-1}  = 3^3 \cdot T(n-3) + 3^2\cdot2^{-1}+3\cdot2^{-1}+2^{-1} \\
+        & = \ldots = 3^i \cdot T(n-i) + \frac{1}{2} \cdot \frac{3^i-1}{3-1} = 3^i \cdot T(n-i) + \frac{3^i-1}{4}
+    \end{aligned}
+\end{equation*}
+Base on the initial condition $T(2)=1, T(1)=0$. \par 
+If $n-i=1 \implies i=n-1$:
+\begin{equation*}
+    \begin{aligned}
+        T(n) \geq 3^{n-1} \cdot 0 + \frac{3^{n-1}-1}{4}
+        = \frac{3^{n-1}-1}{4} \in \Theta(3^n) \\
+        \implies T(n) \in \Omega(2^n)
+    \end{aligned}
+\end{equation*}
+If $n-i=2 \implies i=n-2$:
+\begin{equation*}
+    \begin{aligned}
+        T(n) \geq 3^{n-2} \cdot 1 +  \frac{3^{n-2}-1}{4} \in \Theta(3^n) \\
+        \implies T(n) \in \Omega(2^n)
+    \end{aligned}
+\end{equation*}
+\subsection{Consider the case $n$ is even number}
+With even number, clearly:
+\begin{equation*}
+    \begin{aligned}
+        T(n) &= \sum_{i=1}^{\frac{n}{2}}[T(i)+T(n-i)] + \frac{n}{2} \\
+        &= T(1)+T(2)+\ldots+T(\frac{n}{2})+T(\frac{n}{2})+\ldots+T(n-2)+T(n-1) + \frac{n}{2} \\ 
+        &= \sum_{i=1}^{n-1}T(i) + T(\frac{n}{2}) + \frac{n}{2} 
+    \end{aligned}
+\end{equation*}
+If replace $n$ by $n-1$, $n-1$ is odd:
+\begin{equation*}
+    2 \cdot T(n-1) = 2 \cdot \sum_{i=1}^{n-2}{T(i)} + n-1 
+\end{equation*}
+We can implies some equations like case 1:
+\begin{equation*}
+    \begin{aligned}
+        2T(n) - 2T(n-1) = 2T(n-1) + 1 +  2 \cdot T(\frac{n}{2})
+        & \Leftrightarrow T(n) = 2T(n-1) + 2^{-1} + T(\frac{n}{2})
+    \end{aligned}
+\end{equation*}
+Comeback to the familiar form of recurrence equation, easily solve it by using backward substitution: 
+\begin{equation*}
+    \begin{aligned}
+        T(n)& = 2T(n-1) + 2^{-1} + T(\frac{n}{2}) \geq 2T(n-1) + 2^{-1} \\
+        & = 2 \cdot [2T(n-2) + 2^{-1}] + 2^{-1} = 2^2 \cdot T(n-2) + 2^0 + 2^{-1} \\ 
+        & = 2^2 \cdot[2T(n-3) + 2^{-1}] + 2^0 + 2^{-1}  = 2^3 \cdot T(n-3) + 2^1+2^0+2^{-1} \\
+        & = \ldots = 2^i \cdot T(n-i) + \frac{2^{i-1}-1}{2-1} + 2^{-1} = 2^i \cdot T(n-i) + 2^{i-1} - \frac{1}{2}
+    \end{aligned}
+\end{equation*}
+Base on the initial condition $T(2)=1, T(1)=0$. \par 
+If $n-i=1 \implies i=n-1$:
+\begin{equation*}
+    \begin{aligned}
+        T(n) \geq 2^{n-1} \cdot 0 + 2^{n-2} - \frac{1}{2} 
+        = 2^{n-2} - \frac{1}{2} \in \Theta(2^n) \\
+        \implies T(n) \in \Omega(2^n)
+    \end{aligned}
+\end{equation*}
+If $n-i=2 \implies i=n-2$:
+\begin{equation*}
+    \begin{aligned}
+        T(n) \geq 2^{n-2} \cdot 1 + 2^{n-3} - \frac{1}{2}
+         = 3 \cdot 2^{n-3} - \frac{1}{2} \in \Theta(2^n) \\
+         \implies T(n) \in \Omega(2^n)
+    \end{aligned}
+\end{equation*}
+\newpage
+%------------------------------------------------
+\section{Problem 2}
+\newpage
+%------------------------------------------------
+\section{Problem 3}
+Josephus problem
+\subsection{Problem 3.a}
+From the observation and analysis of Josephus problem, we have the recurrence: 
+\begin{gather*}
+    J(1)=1 \\ 
+    n=2h, \;J(2h)=2J(h)-1 \\
+    n=2h+1, \;J(2h+1)=2J(h)+1
+\end{gather*}
+A close-form solution to the two-case recurrence is as follows:
+\begin{gather*}
+    J(2^k+i)=2i+1, \; i \in [0, \ldots, 2^k-1]
+\end{gather*}
+With $k=0 \implies i=0$:
+\begin{gather*}
+    J(1) = 2 \cdot 0 + 1 = 1
+\end{gather*}
+With $2^k+i = 2m$, then:
+\begin{equation*}
+    \begin{aligned}
+        J(2^k+i) &= 2J(2^{k-1}+\frac{i}{2})-1\\
+        & = 2 \cdot [2 \cdot \frac{i}{2}+1]-1 = 2i+1
+    \end{aligned}
+\end{equation*}
+With $2^k+i=2m+1$, then:
+\begin{equation*}
+    \begin{aligned}
+        J(2^k+i) &= 2J(2^{k-1}+\frac{i-1}{2})+1 \\ 
+        &= 2 \cdot [\frac{2 \cdot(i-1)}{2}+1]+1 \\
+        &= 2i + 1
+    \end{aligned}
+\end{equation*}
+The formula was proved.
+\subsection{Problem 3.b}
+We can represent $n = (b_mb_{m-1} \ldots b_1b_0)_2 = b_m \cdot 2^m + b_{m-1} \cdot2^{m-1} + \ldots + b_1 \cdot 2^1 + b_0 \cdot 2^0$. \par \bigskip
+With $n=2^k+i \implies i = n-2^k = 0 \cdot 2^m + b_{m-1} \cdot2^{m-1} + \ldots + b_1 \cdot 2^1 + b_0 \cdot 2^0 = (0b_{m-1} \ldots b_1b_0)_2$.\par \bigskip
+So, with $2i$, we have: $2i = (b_{m-1}b_{m-2} \ldots b_1b_00)_2$ \par \bigskip
+From the problem 3.a, we proved: $J(2^k+1)=2i+1$:
+\begin{equation*}
+    \begin{aligned}
+        \implies 2i+1& = (b_{m-1}b_{m-2} \ldots b_1b_01)_2 \\
+        &= (b_{m-1}b_{m-2} \ldots b_1b_0b_m)_2
+    \end{aligned}
+\end{equation*}
+We proved that: 
+\begin{gather*}
+    J[(b_mb_{m-1} \ldots b_1b_0)_2] = (b_{m-1}b_{m-2} \ldots b_1b_0b_m)_2
+\end{gather*}
+In conclusion, J(n) can be obtained by a 1-bit cyclic shift left of n itself.
+\newpage
+%------------------------------------------------
+\section{Problem 4}
+Bonus question: where does the following formula come from:
+\begin{gather*}
+    \sum_{i=1}^{n}{i \cdot 2^i} = (n-1) \cdot 2^{n+1} + 2
+\end{gather*}
+Clearly, expansion in series of the left side and replace $2$ by $x$: 
+\begin{gather*}
+     \sum_{i=1}^{n}{i \cdot x^i} = 1x^1 + 2x^2 + 3x^3 + \ldots nx^{n}
+\end{gather*}
+To begin with finding the general formula for that sum, we can see that we have $i \cdot x^i$. This observation makes it possible to connect in ideas is a familiar formula, let's call it $g(x)$:
+\begin{gather*}
+    g(x) = \frac{x^{n+1}-1}{x-1} = 1 + x^1+x^2+ \ldots + x^n
+\end{gather*}
+Take the derivative of $g(x)$: 
+\begin{gather*}
+    \dfrac{d}{dx}(\frac{x^{n+1}-1}{x-1})= 1 + 2x + 3x^2 + \ldots nx^{n-1}
+\end{gather*}
+Multiply $x$ by both sides of the equation: 
+\begin{gather*}
+    x \cdot \dfrac{d}{dx}(\frac{x^{n+1}-1}{x-1}) = 1x^1 + 2x^2 + 3x^3 + \ldots nx^{n} = \sum_{i=1}^{n}{i \cdot x^i}
+\end{gather*}
+Finding the general formula for this sum: 
+\begin{equation*}
+\begin{aligned}
+    x \cdot \dfrac{d}{dx}(\frac{x^{n+1}-1}{x-1})& = x \cdot \frac{(n+1)x^n \cdot (x-1) - (x^{n+1}-1)}{(x-1)^2}  \\ 
+    & = x \cdot \frac{nx^{n+1} - nx^n - x^n + 1}{(x-1)^2} \\
+    & = \frac{x^{n+1} \cdot(nx -n-1) + x}{(x-1)^2}
+\end{aligned}
+\end{equation*}
+Return $x=2$:
+\begin{gather*}
+    \frac{2^{n+1} \cdot(2n -n-1) + 2}{(2-1)^2} = (n-1) \cdot 2^{n+1} + 2
+\end{gather*}
+In conclusion: 
+\begin{gather*}
+     \sum_{i=1}^{n}{i \cdot 2^i} = (n-1) \cdot 2^{n+1} + 2
+\end{gather*}
+The formula in problem was proved.
+
+\newpage
+\end{document}
